@@ -61,8 +61,11 @@ def battle(civ1: Civilization, civ2: Civilization):
                 for count in range(len(civ1.units)):
                     op_civ1 = get_opponent(civ1, civ2, count)
                     op_civ2 = get_opponent(civ2, civ1, count)
-                    civ1.units[count].attack(op_civ1)
-                    civ2.units[count].attack(op_civ2)       
+                    if op_civ1 is None or op_civ2 is None:
+                        pass
+                    else:
+                        civ1.units[count].attack(op_civ1)
+                        civ2.units[count].attack(op_civ2)       
 
         #     military_units_civ1 = list_without_workers(civ1)
         #     military_units_civ2 = list_without_workers(civ2)
@@ -131,8 +134,6 @@ def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: in
                     if effectiveness_point not in list1:
                         list1.append(effectiveness_point)
                         list2.append(opponent)
-                else:
-                    pass
             possible_opponents = dict(zip(list2, list1))
             opponent = max(possible_opponents, key=possible_opponents.get)
             return opponent
@@ -155,8 +156,6 @@ def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: in
                     if effectiveness_point not in list1:
                         list1.append(effectiveness_point)
                         list2.append(opponent)
-                else:
-                    pass
             possible_opponents = dict(zip(list2, list1))
             opponent = max(possible_opponents, key=possible_opponents.get)
             return opponent
