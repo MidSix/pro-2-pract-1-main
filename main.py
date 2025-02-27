@@ -56,57 +56,72 @@ def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     return units_created
 
 def battle(civ1: Civilization, civ2: Civilization):
-    if civ1.all_debilitated() != True and civ2.all_debilitated() != True:
+    if civ1.all_debilitated() != True or civ2.all_debilitated() != True:
             if len(civ1.units) == len(civ2.units):
                 for count in range(len(civ1.units)):
                     op_civ1 = get_opponent(civ1, civ2, count)
                     op_civ2 = get_opponent(civ2, civ1, count)
-                    if op_civ1 is None or op_civ2 is None:
-                        pass
-                    else:
+                    if op_civ1 is not None and op_civ2 is not None:
                         civ1.units[count].attack(op_civ1)
-                        civ2.units[count].attack(op_civ2)       
+                        civ2.units[count].attack(op_civ2)   
+                    elif op_civ1 is None and op_civ2 is not None :
+                        civ2.units[count].attack(op_civ2)
+                    elif op_civ1 is not None and op_civ2 is None:
+                        civ1.units[count].attack(op_civ1)
+                    else:
+                        pass
+            elif len(civ1.units) > len(civ2.units):
+                diferencia = len(civ1.units) - len(civ2.units) # La diferencia sera las units de mas que tiene civ 1 sobre civ2, esas units
+                #atacaran, haremos un bucle for donde cada iteracion sera una de esas unidades de mas que tiene civ1, por eso el bucle se
+                #repetira la diferencia.
 
-        #     military_units_civ1 = list_without_workers(civ1)
-        #     military_units_civ2 = list_without_workers(civ2)
-        #     if len(military_units_civ1) == len(military_units_civ2):
-        #         for count in range(len(military_units_civ1)):
-        #             op_civ1 = get_military_opponent(military_units_civ1, military_units_civ2, count)
-        #             op_civ2 = get_military_opponent(military_units_civ2, military_units_civ1, count)
-        #             military_units_civ1[count].attack(op_civ1)
-        #             military_units_civ2[count].attack(op_civ2)
+                #Atacaran las dos Civilizaciones hasta que se terminen todas las unidades de civ2. 
+                #Por ello iteraremos sobre civ2. Apartir de allí solo atacara civ1.
+                for count in range(len(civ2.units)):
+                    op_civ1 = get_opponent(civ1, civ2, count)
+                    op_civ2 = get_opponent(civ2, civ1, count)
+                    if op_civ1 is not None and op_civ2 is not None:
+                        civ1.units[count].attack(op_civ1)
+                        civ2.units[count].attack(op_civ2)   
+                    elif op_civ1 is None and op_civ2 is not None :
+                        civ2.units[count].attack(op_civ2)
+                    elif op_civ1 is not None and op_civ2 is None:
+                        civ1.units[count].attack(op_civ1)
+                    else:
+                        pass
+                    #El ataque de las unidades que quedan:
+                count = len(civ2.units) - 1
+                while diferencia >= 0:
+                    op_civ1 = get_opponent(civ1, civ2, count)
+                    if op_civ1 is not None:
+                        civ1.units[count].attack(op_civ1)
+                    count += 1
+                    diferencia -= 1
+            else:
+                #len(civ2.units) > len(civ1.units)
+                diferencia = len(civ2.units) - len(civ1.units)
+                for count in range(len(civ1.units)):
+                    op_civ1 = get_opponent(civ1, civ2, count)
+                    op_civ2 = get_opponent(civ2, civ1, count)
+                    if op_civ1 is not None and op_civ2 is not None:
+                        civ1.units[count].attack(op_civ1)
+                        civ2.units[count].attack(op_civ2)   
+                    elif op_civ1 is None and op_civ2 is not None :
+                        civ2.units[count].attack(op_civ2)
+                    elif op_civ1 is not None and op_civ2 is None:
+                        civ1.units[count].attack(op_civ1)
+                    else:
+                        pass
 
-        # elif all_military_units_defeated(civ1) == True and all_military_units_defeated(civ2) == False:
-        #     military_units_civ2 = list_without_workers(civ2)
-        #     if len(civ1.units) == len(civ2.units):
-        #         for count in range(len(civ1.units)):
-        #             op_civ1 = get_military_opponent(civ1.units, military_units_civ2, count)
-        #             op_civ2 = get_military_opponent(military_units_civ2, civ1.units, count)
-        #             civ1.units[count].attack(op_civ1)
-        #             military_units_civ2[count].attack(op_civ2)
-
-
-        # elif all_military_units_defeated(civ1) == False and all_military_units_defeated(civ2) == True:           
-        #     military_units_civ1 = list_without_workers(civ1)
-        #     if len(civ1.units) == len(civ2.units):
-        #         for count in range(len(civ1.units)):
-        #             op_civ1 = get_military_opponent(military_units_civ1, civ2.units, count)
-        #             op_civ2 = get_military_opponent(civ2.units, military_units_civ1, count)
-        #             military_units_civ1[count].attack(op_civ1)
-        #             civ2.units[count].attack(op_civ2)
-        # else:
-        #     military_units_civ1 = list_without_workers(civ1)
-        #     if len(civ1.units) == len(civ2.units):
-        #         for count in range(len(civ1.units)):
-        #             op_civ1 = get_military_opponent(civ1.units, civ2.units, count)
-        #             op_civ2 = get_military_opponent(civ2.units, civ1.units, count)
-        #             civ1.units[count].attack(op_civ1)
-        #             civ2.units[count].attack(op_civ2)         
-        # for unit in civ1.units:
-        #     if not isinstance(unit, Worker):
-        #         pass
+                count = len(civ1.units) - 1
+                while diferencia >= 0:
+                    op_civ2 = get_opponent(civ2, civ1, count)
+                    if op_civ1 is not None:
+                        civ2.units[count].attack(op_civ2)
+                    count += 1
+                    diferencia -= 1
     else:
-        #No retorna nada cuando todas las unidades de ambas civilizaciones 
+        #retorna None si alguna de las dos civilizaciones se queda sin unidades
         return None
     
 def list_without_workers(civ: Civilization) -> list[Unit]:
@@ -119,15 +134,15 @@ def list_without_workers(civ: Civilization) -> list[Unit]:
 def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: int = 0) -> Unit:
     """
     Attacker will be of civ1
-    Opponente wil be of civ2
+    Opponent wil be of civ2
     """
     list1 = []
     list2 = []
     
     attacker = civ1.units[count]
 
-    if isinstance(attacker, Worker) and all_military_units_defeated(civ1) == True:
-        if all_military_units_defeated(civ2) == False:
+    if isinstance(attacker, Worker) and all_military_units_defeated(civ1) is True:
+        if all_military_units_defeated(civ2) is False:
             for opponent in civ2.units:
                 if not isinstance(opponent, Worker):
                     effectiveness_point = attacker.effectiveness(opponent)
@@ -137,7 +152,7 @@ def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: in
             possible_opponents = dict(zip(list2, list1))
             opponent = max(possible_opponents, key=possible_opponents.get)
             return opponent
-        elif all_military_units_defeated(civ2) == True:
+        elif all_military_units_defeated(civ2) is True:
             for opponent in civ2.units:
                 effectiveness_point = attacker.effectiveness(opponent)
                 if effectiveness_point not in list1:
@@ -146,10 +161,10 @@ def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: in
             possible_opponents = dict(zip(list2, list1))
             opponent = max(possible_opponents, key=possible_opponents.get)
             return opponent
-    elif isinstance(attacker, Worker) and all_military_units_defeated(civ1) == False:
+    elif isinstance(attacker, Worker) and all_military_units_defeated(civ1) is False:
         pass
     else:
-        if all_military_units_defeated(civ2) == False:        
+        if all_military_units_defeated(civ2) is False:        
             for opponent in civ2.units:
                 if not isinstance(opponent, Worker):
                     effectiveness_point = attacker.effectiveness(opponent)
@@ -159,7 +174,8 @@ def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: in
             possible_opponents = dict(zip(list2, list1))
             opponent = max(possible_opponents, key=possible_opponents.get)
             return opponent
-        elif all_military_units_defeated(civ2) == True:
+        
+        elif all_military_units_defeated(civ2) is True:
             for opponent in civ2.units:
                 effectiveness_point = attacker.effectiveness(opponent)
                 if effectiveness_point not in list1:
@@ -178,7 +194,7 @@ def all_military_units_defeated(civ : Civilization) -> bool:
 if __name__ == "__main__":
     actual_turn = 1
     # Leer el archivo de configuración desde la línea de comandos o usar el predeterminado
-    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle0.txt"
+    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle1.txt"
 
     # Intentar abrir el archivo especificado
     try:

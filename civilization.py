@@ -76,13 +76,13 @@ class Civilization:
     def collect_resources(self) -> None:
         for unit in range(len(self.units)):
             if self.units[unit].unit_type == "Worker": #Mira si unit_type es de tipo worker
-                if self.units[unit].is_debilitated() == False: #Ya sabe que es de tipo worker, ahora mira si está vivo
+                if self.units[unit].is_debilitated() is False: #Ya sabe que es de tipo worker, ahora mira si está vivo
                     self.resources = self.resources + self.units[unit].collect()
         return None
 
     def all_debilitated(self) -> bool:
         for unit in range(len(self.units)):
-            if self.units[unit].is_debilitated() == False: #Si hay uno que no está debilitado significa que no todos están debilitados
+            if self.units[unit].is_debilitated() is False: #Si hay uno que no está debilitado significa que no todos están debilitados
                 return False
         return True
             
