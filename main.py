@@ -14,6 +14,8 @@ def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, 
         civilization_object.train_unit("Infantry")
 
 def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
+    print("PHASE 1: REPORT")
+    print("----------------------------------------")
     civilizations = [civ1, civ2]
     unit_list = [Worker, Archer, Cavalry, Infantry]
     for civ in civilizations:
@@ -23,9 +25,10 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
                 if isinstance(civ.units[number_unit], unit):
                     print(f"{unit.__name__}: {civ.units[number_unit].name} ({civ.units[number_unit].hp}/{civ.units[number_unit].total_hp})")
         print()
-
+    return None
 def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
-        
+    print("PHASE 1: PRODUCTION")
+    print("----------------------------------------")   
     if created_units[0] == None and created_units[1] == None:
         print(f"{civ1.name} cannot create any unit right now")
         print(f"{civ2.name} cannot create any unit right now")
@@ -38,7 +41,7 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
     else:
         print(f"{civ1.name} creates {created_units[0].name} ({created_units[0].unit_type}) Stats: ATT: {created_units[0].strength} DEF: {created_units[0].defense}, HP: {created_units[0].hp}/{created_units[0].total_hp}")
         print(f"{civ2.name} creates {created_units[1].name} ({created_units[1].unit_type}) Stats: ATT: {created_units[1].strength} DEF: {created_units[1].defense}, HP: {created_units[1].hp}/{created_units[1].total_hp}")    
-    
+    return None
     #Hipotesis 1 
 # def print_phase_3(unit: Unit):
 
