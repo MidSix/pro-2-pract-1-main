@@ -23,6 +23,7 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
                 if isinstance(civ.units[number_unit], unit):
                     print(f"{unit.__name__}: {civ.units[number_unit].name} ({civ.units[number_unit].hp}/{civ.units[number_unit].total_hp})")
         print()
+<<<<<<< Updated upstream
 
 def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
         
@@ -41,6 +42,20 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
     
     #Hipotesis 1 
 # def print_phase_3(unit: Unit):
+=======
+    return None
+
+def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
+    print("PHASE 2: PRODUCTION")
+    print("----------------------------------------")
+    units_by_civ = dict(zip([civ1, civ2], created_units))
+    for civ in units_by_civ:
+        if units_by_civ[civ] is None:
+            print(f"{civ.name} cannot create any unit right now")
+        else:
+            print(f"{civ.name} creates {units_by_civ[civ].name} ({units_by_civ[civ].unit_type}) Stats: ATT: {units_by_civ[civ].strength} DEF: {units_by_civ[civ].defense}, HP: {units_by_civ[civ].hp}/{units_by_civ[civ].total_hp}")
+    return None
+>>>>>>> Stashed changes
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
@@ -82,7 +97,7 @@ def battle(civ1: Civilization, civ2: Civilization):
                     op_civ2 = get_opponent(civ2, civ1, count)
                     if op_civ1 is not None and op_civ2 is not None:
                         civ1.units[count].attack(op_civ1)
-                        civ2.units[count].attack(op_civ2)   
+                        civ2.units[count].attack(op_civ2) 
                     elif op_civ1 is None and op_civ2 is not None :
                         civ2.units[count].attack(op_civ2)
                     elif op_civ1 is not None and op_civ2 is None:
@@ -259,8 +274,8 @@ if __name__ == "__main__":
     #Implementación de la lógica de batalla
     while actual_turn <= turns:
         #fase 1 - recolección:
-
-        print("turno:", actual_turn)
+        print("----------------------------------------")       
+        print("TURNO:", actual_turn)
         civ1.collect_resources()
         civ2.collect_resources()
         #Phase 1 report
