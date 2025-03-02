@@ -314,10 +314,7 @@ class Unit(ABC):
         str
             La representación en cadena de texto de la unidad.
         """
-        return f"{self.name} ({self.unit_type}) Stats: ATT: {self.strength}, DEF: {self.defense}, HP: {self.hp}/{self.total_hp}"
-    
-    def __repr__(self):
-        return self.__str__()
+        return f"{self.name} ({self.unit_type}) Stats: ATT: {self.strength}, DEF: {self.defense}"
 #--------------------
 # Arqueros
 #--------------------

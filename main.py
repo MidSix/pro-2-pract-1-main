@@ -36,6 +36,13 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
             print(f"{civ.name} creates {units_by_civ[civ].name} ({units_by_civ[civ].unit_type}) Stats: ATT: {units_by_civ[civ].strength} DEF: {units_by_civ[civ].defense}, HP: {units_by_civ[civ].hp}/{units_by_civ[civ].total_hp}")
     return None
 
+def print_phase_3(attacker_oponnent : dict, control_variable: int, dmg: int):
+    attacker = attacker_oponnent[0]
+    if control_variable % 2 == 0:
+        print(f"{civ1.name} - {attacker.name} attacks {civ2.name} - {attacker_oponnent[1]} with damage {dmg} (hp = {attacker_oponnent[1].hp}/{attacker_oponnent[1].total_hp})")
+    else:
+        print(f"{civ2.name} - {attacker.name} attacks {civ1.name} - {attacker_oponnent[1]} with damage {dmg} (hp = {attacker_oponnent[1].hp}/{attacker_oponnent[1].total_hp})")
+
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
     for civ in civilizations:
@@ -50,74 +57,56 @@ def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     return units_created
 
 def battle(civ1: Civilization, civ2: Civilization):
-    if civ1.all_debilitated() != True or civ2.all_debilitated() != True:
-            if len(civ1.units) == len(civ2.units):
-                for count in range(len(civ1.units)):
-                    op_civ1 = get_opponent(civ1, civ2, count)
-                    op_civ2 = get_opponent(civ2, civ1, count)
-                    if op_civ1 is not None and op_civ2 is not None:
-                        civ1.units[count].attack(op_civ1)
-                        civ2.units[count].attack(op_civ2)   
-                    elif op_civ1 is None and op_civ2 is not None :
-                        civ2.units[count].attack(op_civ2)
-                    elif op_civ1 is not None and op_civ2 is None:
-                        civ1.units[count].attack(op_civ1)
-                    else:
-                        pass
-            elif len(civ1.units) > len(civ2.units):
-                diferencia = len(civ1.units) - len(civ2.units) # La diferencia sera las units de mas que tiene civ 1 sobre civ2, esas units
-                #atacaran, haremos un bucle for donde cada iteracion sera una de esas unidades de mas que tiene civ1, por eso el bucle se
-                #repetira la diferencia.
+    
+    if civ1.all_debilitated() is False or civ2.all_debilitated() is False:
+        civ_dict = {civ1 : [], civ2: []}
+        for civ in civ_dict:
+            for unit in civ.units:
+                if isinstance(unit, Worker) and all_military_units_defeated(civ) is False:
+                    civ_dict[civ] = list_without_workers(civ)
+                    break
+                else:
+                    civ_dict[civ] = civ.units
+                    break
+        #        
+        if len(list(civ_dict.values())[0]) == len(list(civ_dict.values())[1]):
+            for count in range(len(list(civ_dict.values())[0])):  
+                attack_procedure(civ_dict, count)
+        #
+        elif len(list(civ_dict.values())[0]) > len(list(civ_dict.values())[1]):
 
-                #Atacaran las dos Civilizaciones hasta que se terminen todas las unidades de civ2. 
-                #Por ello iteraremos sobre civ2. Apartir de allí solo atacara civ1.
-                for count in range(len(civ2.units)):
-                    op_civ1 = get_opponent(civ1, civ2, count)
-                    op_civ2 = get_opponent(civ2, civ1, count)
-                    if op_civ1 is not None and op_civ2 is not None:
-                        civ1.units[count].attack(op_civ1)
-                        civ2.units[count].attack(op_civ2) 
-                    elif op_civ1 is None and op_civ2 is not None :
-                        civ2.units[count].attack(op_civ2)
-                    elif op_civ1 is not None and op_civ2 is None:
-                        civ1.units[count].attack(op_civ1)
-                    else:
-                        pass
-                    #El ataque de las unidades que quedan:
-                count = len(civ2.units) - 1
-                while diferencia >= 0:
-                    op_civ1 = get_opponent(civ1, civ2, count)
-                    if op_civ1 is not None:
-                        civ1.units[count].attack(op_civ1)
-                    count += 1
-                    diferencia -= 1
-            else:
-                #len(civ2.units) > len(civ1.units)
-                diferencia = len(civ2.units) - len(civ1.units)
-                for count in range(len(civ1.units)):
-                    op_civ1 = get_opponent(civ1, civ2, count)
-                    op_civ2 = get_opponent(civ2, civ1, count)
-                    if op_civ1 is not None and op_civ2 is not None:
-                        civ1.units[count].attack(op_civ1)
-                        civ2.units[count].attack(op_civ2)   
-                    elif op_civ1 is None and op_civ2 is not None :
-                        civ2.units[count].attack(op_civ2)
-                    elif op_civ1 is not None and op_civ2 is None:
-                        civ1.units[count].attack(op_civ1)
-                    else:
-                        pass
+            diferencia = len(list(civ_dict.values())[0]) - len(list(civ_dict.values())[1])
+            for count in range(len(list(civ_dict.values())[1])): 
+                attack_procedure(civ_dict, count)
 
-                count = len(civ1.units) - 1
-                while diferencia >= 0:
-                    op_civ2 = get_opponent(civ2, civ1, count)
-                    if op_civ1 is not None:
-                        civ2.units[count].attack(op_civ2)
-                    count += 1
-                    diferencia -= 1
+            count = len(list(civ_dict.values())[1]) - 1
+            while diferencia >= 0:
+
+                op_civ1 = get_opponents(civ_dict, count=count,number_opponent=1, civ_opponent=civ2, civ_attackers=civ1)
+                if list(civ_dict.values())[0][count].is_debilitated() is False:
+                    list(civ_dict.values())[0][count].attack(op_civ1)
+                count += 1
+                diferencia -= 1
+        #
+        else:
+            #len(list(civ_dict.values())[1] > len(list(civ_dict.values())[0])
+            diferencia = len(list(civ_dict.values())[1]) - len(list(civ_dict.values())[0])
+            for count in range(len(list(civ_dict.values())[0])):
+                attack_procedure(civ_dict, count)
+
+            count = len(list(civ_dict.values())[0]) - 1
+            while diferencia >= 0:
+
+                op_civ2 = get_opponents(civ_dict, count=count,number_opponent=1, civ_opponent=civ1, civ_attackers=civ2) 
+                if list(civ_dict.values())[1][count].is_debilitated() is False:
+                    list(civ_dict.values())[1][count].attack(op_civ2)
+                count += 1
+                diferencia -= 1
+        return
     else:
         #retorna None si alguna de las dos civilizaciones se queda sin unidades
         return None
-    
+
 def list_without_workers(civ: Civilization) -> list[Unit]:
     military_units = []
     for unit in civ.units:
@@ -125,59 +114,64 @@ def list_without_workers(civ: Civilization) -> list[Unit]:
             military_units.append(unit)
     return military_units
     
-def get_opponent(civ1: Civilization = None, civ2: Civilization = None, count: int = 0) -> Unit:
+def get_attackers(civ_dict: dict, count: int) -> list[Unit]:
     """
-    Attacker will be of civ1
-    Opponent wil be of civ2
+    Devuelve una lista con los atacantes de la civ 1 y civ 2 respectivamente.
     """
-    list1 = []
-    list2 = []
-    
-    attacker = civ1.units[count]
+    attackers = []
+    for unit_list in civ_dict.values():
+        attackers.append(unit_list[count])
+    return attackers
 
-    if isinstance(attacker, Worker) and all_military_units_defeated(civ1) is True:
-        if all_military_units_defeated(civ2) is False:
-            for opponent in civ2.units:
-                if not isinstance(opponent, Worker):
-                    effectiveness_point = attacker.effectiveness(opponent)
+def get_opponents(civ_dict: dict, attackers: list[Unit] = None , number_opponent : int = 2, civ_opponent : Civilization = None, civ_attackers: Civilization = None, count : int = 0) -> Unit:
+    """
+    """
+    if number_opponent != 1 or number_opponent != 2:
+        cnn = 0
+        if number_opponent == 2:
+            opponents = []
+            for opponent_civ in reversed(list(civ_dict.values())):
+                list1 = []
+                list2 = []
+                for opponent in opponent_civ:
+                    effectiveness_point = attackers[cnn].effectiveness(opponent)
                     if effectiveness_point not in list1:
                         list1.append(effectiveness_point)
                         list2.append(opponent)
-            possible_opponents = dict(zip(list2, list1))
-            opponent = max(possible_opponents, key=possible_opponents.get)
-            return opponent
-        elif all_military_units_defeated(civ2) is True:
-            for opponent in civ2.units:
-                effectiveness_point = attacker.effectiveness(opponent)
-                if effectiveness_point not in list1:
-                    list1.append(effectiveness_point)
-                    list2.append(opponent)
-            possible_opponents = dict(zip(list2, list1))
-            opponent = max(possible_opponents, key=possible_opponents.get)
-            return opponent
-    elif isinstance(attacker, Worker) and all_military_units_defeated(civ1) is False:
-        pass
-    else:
-        if all_military_units_defeated(civ2) is False:        
-            for opponent in civ2.units:
-                if not isinstance(opponent, Worker):
-                    effectiveness_point = attacker.effectiveness(opponent)
-                    if effectiveness_point not in list1:
-                        list1.append(effectiveness_point)
-                        list2.append(opponent)
-            possible_opponents = dict(zip(list2, list1))
-            opponent = max(possible_opponents, key=possible_opponents.get)
-            return opponent
+                possible_opponents = dict(zip(list2, list1))
+                opponent = max(possible_opponents, key=possible_opponents.get)
+                opponents.append(opponent)
+                cnn += 1
+            return opponents
         
-        elif all_military_units_defeated(civ2) is True:
-            for opponent in civ2.units:
-                effectiveness_point = attacker.effectiveness(opponent)
+        else:
+            #civ: oponente. si es civ2 significa que los atacantes son civ 1
+            list1 = []
+            list2 = []
+            for opponent in civ_dict[civ_opponent]:
+                effectiveness_point = list(civ_dict[civ_attackers])[count].effectiveness(opponent)
                 if effectiveness_point not in list1:
                     list1.append(effectiveness_point)
                     list2.append(opponent)
-            possible_opponents = dict(zip(list2, list1))
-            opponent = max(possible_opponents, key=possible_opponents.get)
-            return opponent
+        possible_opponents = dict(zip(list2, list1))
+        opponent = max(possible_opponents, key=possible_opponents.get)
+        return opponent                
+
+    raise ValueError("number_opponent argument must be 1 or 2")
+
+def attack_procedure(civ_dict: dict, count: int):
+    attackers = get_attackers(civ_dict, count)
+    opponents = get_opponents(civ_dict, attackers)
+    attacker_and_opponent = dict(zip(attackers, opponents))
+    i = 0
+    control_variable = 0
+    for attacker in attacker_and_opponent:
+        if attacker.is_debilitated() is False:
+            dmg = attacker.attack(list(attacker_and_opponent.values())[i])
+            print_phase_3(list(attacker_and_opponent.items())[i], control_variable, dmg)
+            control_variable += 1
+            i += 1
+    return attacker_and_opponent
 
 def all_military_units_defeated(civ : Civilization) -> bool:
     for unit in civ.units:
@@ -188,7 +182,7 @@ def all_military_units_defeated(civ : Civilization) -> bool:
 if __name__ == "__main__":
     actual_turn = 1
     # Leer el archivo de configuración desde la línea de comandos o usar el predeterminado
-    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle1.txt"
+    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle0.txt"
 
     # Intentar abrir el archivo especificado
     try:
@@ -252,9 +246,10 @@ if __name__ == "__main__":
 
     #Implementación de la lógica de batalla
     while actual_turn <= turns:
-        #fase 1 - recolección:
-        print("----------------------------------------")       
-        print("TURNO:", actual_turn)
+        #fase 1 - recolección:      
+        print("TURNO:\n", actual_turn)
+        print("PHASE 1: REPORT")
+        print("----------------------------------------")
         civ1.collect_resources()
         civ2.collect_resources()
         #Phase 1 report
@@ -273,7 +268,20 @@ if __name__ == "__main__":
         print_phase_2(created_units, civ1, civ2)
 
         #fase 3 - Batalla
-
+        print()
+        print("PHASE 3: BATTLE STATUS")
+        print("----------------------------------------") 
         battle(civ1,civ2)
 
+        #phase 3 - report
+        #Por cada ataque debe ejercutarse print_phase_3, es decir, será llamado dentro de battle cada que se haga un ataque
+        #Esto tiene que ser así porque la vida de la unidad debe reflejar el dmg que se le fue efectuado, si le hicieron 
+        #dmg 4 a una unidad de 25 de hp el hp que se muestre debe ser 21, si se quiere llamar a la función print_phase_3 aquí luego de que 
+        #todas las unidades hayan atacado entonces una misma unidad muy probablemente haya recibido más de un ataque
+        #y el dmg que le fue efectuado por una unidad no reflejará su hp, por ejemplo una le dio dmg 4 a la de 25 hp, pero esa misma recibio 2 ataques más
+        # de 5 y 7  dmg, el hp que se mostrará de la unidad será 9 y no 21.
+
+        #Para terminar la batalla si alguna de las dos civilizaciones ha perdido todas sus unidades
+        if civ1.all_debilitated() is True or civ2.all_debilitated() is True:
+            break
         actual_turn += 1
