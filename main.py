@@ -2,7 +2,11 @@ import sys
 import importlib
 from unit import *
 from civilization import *
-
+"""
+Authors:
+Sebastián David Moreno Expósito; sebastian.exposito@udc.es
+Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
+"""
 def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, Cavalries: int = 0, Infantries: int = 0) -> None:
     for worker in range(Workers):
         civilization_object.train_unit("Worker")
