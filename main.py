@@ -27,23 +27,18 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
         print()
     return None
 def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
-    print("PHASE 1: PRODUCTION")
+    print("PHASE 2: PRODUCTION")
     print("----------------------------------------")   
     if created_units[0] == None and created_units[1] == None:
         print(f"{civ1.name} cannot create any unit right now")
-        print(f"{civ2.name} cannot create any unit right now")
-    elif created_units[1] == None:
-        print(f"{civ2.name} cannot create any unit right now")
-        print(f"{civ1.name} creates {created_units[0].name} ({created_units[0].unit_type}) Stats: ATT: {created_units[0].strength} DEF: {created_units[0].defense}, HP: {created_units[0].hp}/{created_units[0].total_hp}")
-    elif created_units[0] == None:
-        print(f"{civ1.name} cannot create any unit right now")
-        print(f"{civ2.name} creates {created_units[1].name} ({created_units[1].unit_type}) Stats: ATT: {created_units[1].strength} DEF: {created_units[1].defense}, HP: {created_units[1].hp}/{created_units[1].total_hp}")
     else:
         print(f"{civ1.name} creates {created_units[0].name} ({created_units[0].unit_type}) Stats: ATT: {created_units[0].strength} DEF: {created_units[0].defense}, HP: {created_units[0].hp}/{created_units[0].total_hp}")
+    if created_units[1] == None:
+        print(f"{civ2.name} cannot create any unit right now")
+    else:
         print(f"{civ2.name} creates {created_units[1].name} ({created_units[1].unit_type}) Stats: ATT: {created_units[1].strength} DEF: {created_units[1].defense}, HP: {created_units[1].hp}/{created_units[1].total_hp}")    
     return None
-    #Hipotesis 1 
-# def print_phase_3(unit: Unit):
+
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
