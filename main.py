@@ -38,7 +38,9 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
     else:
         print(f"{civ2.name} creates {created_units[1].name} ({created_units[1].unit_type}) Stats: ATT: {created_units[1].strength} DEF: {created_units[1].defense}, HP: {created_units[1].hp}/{created_units[1].total_hp}")    
     return None
-
+def print_phase_3(civ1, civ2) -> None:
+    print("PHASE 3: BATTLE STATUS")
+    print("----------------------------------------")
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
