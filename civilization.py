@@ -1,6 +1,10 @@
 # Parte 2
 from unit import *
-
+"""
+Authors:
+Sebastián David Moreno Expósito; sebastian.exposito@udc.es
+Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
+"""
 class Civilization:
     # class atributes
     unit_name_list = ["Archer", "Cavalry", "Infantry", "Worker"]
