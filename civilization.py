@@ -81,6 +81,11 @@ class Civilization:
         return None
 
     def all_debilitated(self) -> bool:
+        """
+        Retorna True si la Civilización entera está debilitada
+        """
+        if len(self.units) == 0:
+            return True
         for unit in range(len(self.units)):
             if self.units[unit].is_debilitated() is False: #Si hay uno que no está debilitado significa que no todos están debilitados
                 return False
@@ -102,7 +107,7 @@ class Civilization:
     def list_units_alive(self, units_list : list[Unit]) -> None:
             alive_units = []
             for unit in units_list:
-                if unit.is_debilitated() != True:
+                if unit.is_debilitated() is not True:
                     alive_units.append(unit)
             self.units = alive_units
             return None
@@ -110,5 +115,9 @@ class Civilization:
             
     #Redefine magic methods
     def __str__(self):
+        units_str = '\n'.join(str(unit) for unit in self._units)
+        return f"Civilization: {self._name}, Resources: {self._resources}, units:\n[{units_str}]"
+    
+    def __repr__(self):
         units_str = '\n'.join(str(unit) for unit in self._units)
         return f"Civilization: {self._name}, Resources: {self._resources}, units:\n[{units_str}]"

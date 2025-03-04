@@ -36,12 +36,16 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
             print(f"{civ.name} creates {units_by_civ[civ].name} ({units_by_civ[civ].unit_type}) Stats: ATT: {units_by_civ[civ].strength} DEF: {units_by_civ[civ].defense}, HP: {units_by_civ[civ].hp}/{units_by_civ[civ].total_hp}")
     return None
 
-def print_phase_3(attacker_oponnent : dict, control_variable: int, dmg: int):
+def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int):
+    #control_variable % 2 == 0 -> muestra la civ1, control_variable % 2 != 0 -> muestra civ2
+
     attacker = attacker_oponnent[0]
+    opponent = attacker_oponnent[1]
+
     if control_variable % 2 == 0:
-        print(f"{civ1.name} - {attacker.name} attacks {civ2.name} - {attacker_oponnent[1]} with damage {dmg} (hp = {attacker_oponnent[1].hp}/{attacker_oponnent[1].total_hp})")
+        print(f"{civ1.name} - {attacker.name} attacks {civ2.name} - {opponent} with damage {dmg} (hp = {opponent.hp}/{opponent.total_hp})")
     else:
-        print(f"{civ2.name} - {attacker.name} attacks {civ1.name} - {attacker_oponnent[1]} with damage {dmg} (hp = {attacker_oponnent[1].hp}/{attacker_oponnent[1].total_hp})")
+        print(f"{civ2.name} - {attacker.name} attacks {civ1.name} - {opponent} with damage {dmg} (hp = {opponent.hp}/{opponent.total_hp})")
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
@@ -57,7 +61,7 @@ def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     return units_created
 
 def battle(civ1: Civilization, civ2: Civilization):
-    
+
     if civ1.all_debilitated() is False or civ2.all_debilitated() is False:
         civ_dict = {civ1 : [], civ2: []}
         for civ in civ_dict:
@@ -68,44 +72,99 @@ def battle(civ1: Civilization, civ2: Civilization):
                 else:
                     civ_dict[civ] = civ.units
                     break
-        #        
-        if len(list(civ_dict.values())[0]) == len(list(civ_dict.values())[1]):
-            for count in range(len(list(civ_dict.values())[0])):  
-                attack_procedure(civ_dict, count)
-        #
-        elif len(list(civ_dict.values())[0]) > len(list(civ_dict.values())[1]):
+    
+    control_attacker = 0
+    control_opponent = 1
+    alternating_between_civs = 1
+    print_who_civ_attacks = 0
+    control = 0
 
-            diferencia = len(list(civ_dict.values())[0]) - len(list(civ_dict.values())[1])
-            for count in range(len(list(civ_dict.values())[1])): 
-                attack_procedure(civ_dict, count)
+    
+    civ_list = list(civ_dict)
+    while True:
+        #choose_who_civ_attack: 0 -> civ1 attacks, 1 -> civ2 attacks
+        choose_who_civ_attack = control % 2
+        choose_who_civ_is_opponent = control_opponent % 2
 
-            count = len(list(civ_dict.values())[1]) - 1
-            while diferencia >= 0:
+        attacker = get_attacker(civ_dict, control_attacker, choose_who_civ_attack)
 
-                op_civ1 = get_opponents(civ_dict, count=count,number_opponent=1, civ_opponent=civ2, civ_attackers=civ1)
-                if list(civ_dict.values())[0][count].is_debilitated() is False:
-                    list(civ_dict.values())[0][count].attack(op_civ1)
-                count += 1
-                diferencia -= 1
-        #
-        else:
-            #len(list(civ_dict.values())[1] > len(list(civ_dict.values())[0])
-            diferencia = len(list(civ_dict.values())[1]) - len(list(civ_dict.values())[0])
-            for count in range(len(list(civ_dict.values())[0])):
-                attack_procedure(civ_dict, count)
+        if isinstance(attacker, int):
+            if not len(list(civ_dict.values())[choose_who_civ_attack]) == len(list(civ_dict.values())[choose_who_civ_is_opponent]):
+                if attacker == 0:
+                    print(f"\nEnd of alternating sequence: Civilization {civ1.name} has no more attackers left")
+                    choose_who_civ_attack = 1
+                    attacker = get_attacker(civ_dict, control_attacker, choose_who_civ_attack)
+                    if isinstance(attacker, int):
+                        print(f"Civilization: {civ2.name} has no more attackers left either")
+                        return None
+                    else:         
+                        print(f"The remaining units of the stronger civilization: {civ2.name} now attacks in sequence")
+                        choose_who_civ_is_opponent = 0
+                        break
+                else:
+                    print(f"\nEnd of alternating sequence: Civilization {civ2.name} has no more attackers left")
+                    choose_who_civ_attack = 0
+                    control_attacker += 1
+                    attacker = get_attacker(civ_dict, control_attacker, choose_who_civ_attack)
+                    if isinstance(attacker, int):
+                        print(f"Civilization: {civ1.name} has no more attackers left either")
+                        return None
+                    else:
+                        print(f"The remaining units of the stronger civilization: {civ1.name} now attacks in sequence")
+                        choose_who_civ_is_opponent = 1
+                        break
+            else:
+                print("\nBoth civilizations don't have more attackers")
+                return None
 
-            count = len(list(civ_dict.values())[0]) - 1
-            while diferencia >= 0:
+        opponent = get_opponent(civ_dict, civ_list[choose_who_civ_is_opponent], attacker)
+        end = attack_procedure(civ_dict, attacker, opponent, civ_list[choose_who_civ_is_opponent], print_who_civ_attacks)
+        if end is True:
+            print(f"Civilization: {civ_list[choose_who_civ_is_opponent].name} has lost against civilization: {civ_list[choose_who_civ_attack].name}")
+            return end
+        
+        #Cada dos iteraciones el índice del atacante debe aumentar, debe permanecer igual por dos iteraciones
+        #porque en la primera iteración ataca indice n de civ 1 y luego tiene que atacar indice n
+        if alternating_between_civs % 2 == 0:
+            control_attacker += 1
 
-                op_civ2 = get_opponents(civ_dict, count=count,number_opponent=1, civ_opponent=civ1, civ_attackers=civ2) 
-                if list(civ_dict.values())[1][count].is_debilitated() is False:
-                    list(civ_dict.values())[1][count].attack(op_civ2)
-                count += 1
-                diferencia -= 1
-        return
+        control_opponent += 1
+        alternating_between_civs += 1
+        print_who_civ_attacks += 1
+        control += 1
+    
+    diff = abs(len(list(civ_dict.values())[choose_who_civ_attack]) - len(list(civ_dict.values())[choose_who_civ_is_opponent]))
+
+    if choose_who_civ_attack == 1:
+        count = len(list(civ_dict.values())[choose_who_civ_is_opponent]) - 1
+        while diff >= 0:
+            attacker = list(civ_dict.values())[choose_who_civ_attack][count]
+            opponent = get_opponent(civ_dict, civ_list[0], attacker)
+            dmg = attacker.attack(opponent)
+            if opponent.hp <= 0:
+                civ.units.remove(opponent)
+                if civ.all_debilitated() is True:
+                    print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
+                    return True 
+            print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
+            diff -= 1
+            count += 1
     else:
-        #retorna None si alguna de las dos civilizaciones se queda sin unidades
-        return None
+        count = len(list(civ_dict.values())[choose_who_civ_is_opponent]) - 1
+        while diff >= 0:
+            attacker = list(civ_dict.values())[choose_who_civ_attack][count]
+            opponent = get_opponent(civ_dict, civ_list[1], attacker)
+            dmg = attacker.attack(opponent)
+            if opponent.hp <= 0:
+                civ.units.remove(opponent)
+                if civ.all_debilitated() is True:
+                    print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
+                    return True 
+            print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
+            diff -= 1
+            count += 1
+
+    return False
 
 def list_without_workers(civ: Civilization) -> list[Unit]:
     military_units = []
@@ -113,65 +172,70 @@ def list_without_workers(civ: Civilization) -> list[Unit]:
         if not isinstance(unit, Worker):
             military_units.append(unit)
     return military_units
+
+def attack_handler(civ_dict: dict, count: int, choice : int):
+    #list() para permitir que civ_dict.values() sea scriptable (usar choice y count)
+    #civ_dict.values() esto te devuelve los atacantes de civ 1 y civ 2
+    #con choice se elige entrar en los atacantes de civ 1 o 2. valores 0 y 1 respectivamente.
+    #con count se elige cuál atacante en específico.
+    try:
+        attacker = list(civ_dict.values())[choice][count]
+    except IndexError:
+        return None
+    else:                  
+        return attacker
+      
+def get_attacker(civ_dict: dict, count: int, choice : int) -> Unit:
+    """
+    Devuelve al atacante.
+    """
+    attacker = attack_handler(civ_dict, count, choice)
+
+    if attacker is None:
+        return choice 
     
-def get_attackers(civ_dict: dict, count: int) -> list[Unit]:
-    """
-    Devuelve una lista con los atacantes de la civ 1 y civ 2 respectivamente.
-    """
-    attackers = []
-    for unit_list in civ_dict.values():
-        attackers.append(unit_list[count])
-    return attackers
+    return attacker
 
-def get_opponents(civ_dict: dict, attackers: list[Unit] = None , number_opponent : int = 2, civ_opponent : Civilization = None, civ_attackers: Civilization = None, count : int = 0) -> Unit:
+def get_opponent(civ_dict : dict, civ_opponent: Civilization, attacker: Unit) -> Unit:
     """
     """
-    if number_opponent != 1 or number_opponent != 2:
-        cnn = 0
-        if number_opponent == 2:
-            opponents = []
-            for opponent_civ in reversed(list(civ_dict.values())):
-                list1 = []
-                list2 = []
-                for opponent in opponent_civ:
-                    effectiveness_point = attackers[cnn].effectiveness(opponent)
-                    if effectiveness_point not in list1:
-                        list1.append(effectiveness_point)
-                        list2.append(opponent)
-                possible_opponents = dict(zip(list2, list1))
-                opponent = max(possible_opponents, key=possible_opponents.get)
-                opponents.append(opponent)
-                cnn += 1
-            return opponents
-        
+    temp1 = []
+    temp2 = []
+    for opponent in civ_dict[civ_opponent]:
+        effectiveness_point = attacker.effectiveness(opponent)
+        if effectiveness_point not in temp1:
+            temp1.append(effectiveness_point)
+            temp2.append(opponent)
+    possible_opponents = dict(zip(temp2, temp1))
+    opponent = max(possible_opponents, key=possible_opponents.get)
+    return opponent                
+
+def attack_handler(civ_dict: dict, count: int, choice : int):
+    try:
+        attacker = list(civ_dict.values())[choice][count]
+    except IndexError:
+        return None
+    else:                  
+        return attacker
+
+def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int):
+
+    dmg = attacker.attack(opponent)
+    if opponent.hp <= 0:
+        civ.units.remove(opponent)
+        if civ.all_debilitated() is False:
+            for unit in civ.units:
+                if isinstance(unit, Worker) and all_military_units_defeated(civ) is False:
+                    civ_dict[civ] = list_without_workers(civ)
+                    break
+                else:
+                    civ_dict[civ] = civ.units
+                    break
         else:
-            #civ: oponente. si es civ2 significa que los atacantes son civ 1
-            list1 = []
-            list2 = []
-            for opponent in civ_dict[civ_opponent]:
-                effectiveness_point = list(civ_dict[civ_attackers])[count].effectiveness(opponent)
-                if effectiveness_point not in list1:
-                    list1.append(effectiveness_point)
-                    list2.append(opponent)
-        possible_opponents = dict(zip(list2, list1))
-        opponent = max(possible_opponents, key=possible_opponents.get)
-        return opponent                
-
-    raise ValueError("number_opponent argument must be 1 or 2")
-
-def attack_procedure(civ_dict: dict, count: int):
-    attackers = get_attackers(civ_dict, count)
-    opponents = get_opponents(civ_dict, attackers)
-    attacker_and_opponent = dict(zip(attackers, opponents))
-    i = 0
-    control_variable = 0
-    for attacker in attacker_and_opponent:
-        if attacker.is_debilitated() is False:
-            dmg = attacker.attack(list(attacker_and_opponent.values())[i])
-            print_phase_3(list(attacker_and_opponent.items())[i], control_variable, dmg)
-            control_variable += 1
-            i += 1
-    return attacker_and_opponent
+            print_phase_3((attacker, opponent), print_civ, dmg)
+            return True 
+    print_phase_3((attacker, opponent), print_civ, dmg)
+    return None
 
 def all_military_units_defeated(civ : Civilization) -> bool:
     for unit in civ.units:
@@ -182,7 +246,7 @@ def all_military_units_defeated(civ : Civilization) -> bool:
 if __name__ == "__main__":
     actual_turn = 1
     # Leer el archivo de configuración desde la línea de comandos o usar el predeterminado
-    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle0.txt"
+    config_file = sys.argv[1] if len(sys.argv) > 1 else "battle1.txt"
 
     # Intentar abrir el archivo especificado
     try:
@@ -271,8 +335,9 @@ if __name__ == "__main__":
         print()
         print("PHASE 3: BATTLE STATUS")
         print("----------------------------------------") 
-        battle(civ1,civ2)
-
+        end = battle(civ1,civ2)
+        if end is True:
+            break
         #phase 3 - report
         #Por cada ataque debe ejercutarse print_phase_3, es decir, será llamado dentro de battle cada que se haga un ataque
         #Esto tiene que ser así porque la vida de la unidad debe reflejar el dmg que se le fue efectuado, si le hicieron 
@@ -280,8 +345,4 @@ if __name__ == "__main__":
         #todas las unidades hayan atacado entonces una misma unidad muy probablemente haya recibido más de un ataque
         #y el dmg que le fue efectuado por una unidad no reflejará su hp, por ejemplo una le dio dmg 4 a la de 25 hp, pero esa misma recibio 2 ataques más
         # de 5 y 7  dmg, el hp que se mostrará de la unidad será 9 y no 21.
-
-        #Para terminar la batalla si alguna de las dos civilizaciones ha perdido todas sus unidades
-        if civ1.all_debilitated() is True or civ2.all_debilitated() is True:
-            break
         actual_turn += 1
