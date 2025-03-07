@@ -28,6 +28,7 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
 def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
     print("PHASE 2: PRODUCTION")
     print("----------------------------------------")
+    
     units_by_civ = dict(zip([civ1, civ2], created_units))
     for civ in units_by_civ:
         if units_by_civ[civ] is None:
@@ -132,39 +133,28 @@ def battle(civ1: Civilization, civ2: Civilization):
         alternating_between_civs += 1
         print_who_civ_attacks += 1
         control += 1
-    
-    diff = abs(len(list(civ_dict.values())[choose_who_civ_attack]) - len(list(civ_dict.values())[choose_who_civ_is_opponent]))
 
+    count = len(list(civ_dict.values())[choose_who_civ_is_opponent]) - 1
     if choose_who_civ_attack == 1:
-        count = len(list(civ_dict.values())[choose_who_civ_is_opponent]) - 1
-        while diff >= 0:
-            attacker = list(civ_dict.values())[choose_who_civ_attack][count]
-            opponent = get_opponent(civ_dict, civ_list[0], attacker)
-            dmg = attacker.attack(opponent)
-            if opponent.hp <= 0:
-                civ.units.remove(opponent)
-                if civ.all_debilitated() is True:
-                    print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
-                    return True 
-            print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
-            diff -= 1
-            count += 1
+        attack_remaining_units(civ_dict, civ_list, count, choose_who_civ_attack, choose_who_civ_is_opponent)
+
     else:
-        count = len(list(civ_dict.values())[choose_who_civ_is_opponent]) - 1
-        while diff >= 0:
-            attacker = list(civ_dict.values())[choose_who_civ_attack][count]
-            opponent = get_opponent(civ_dict, civ_list[1], attacker)
-            dmg = attacker.attack(opponent)
-            if opponent.hp <= 0:
-                civ.units.remove(opponent)
-                if civ.all_debilitated() is True:
-                    print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
-                    return True 
-            print_phase_3((attacker, opponent), choose_who_civ_attack, dmg)
-            diff -= 1
-            count += 1
+        attack_remaining_units(civ_dict, civ_list, count, choose_who_civ_attack, choose_who_civ_is_opponent)
 
     return False
+
+def attack_remaining_units(civ_dict : dict, civ_list : list[Unit], count: int, choose_who_civ_attack: int, choose_who_civ_is_opponent: int):
+    while True:
+        attacker = get_attacker(civ_dict, count, choose_who_civ_attack)
+        if isinstance(attacker, int):
+            print(f"Civilization : {civ_list[choose_who_civ_attack].name} has no more attackers left")
+            return None
+        opponent = get_opponent(civ_dict, civ1,  attacker)
+        end = attack_procedure(civ_dict, attacker, opponent, civ_list[choose_who_civ_is_opponent], choose_who_civ_attack)
+        if end is True:
+            print(f"Civilization: {civ_list[choose_who_civ_is_opponent].name} has lost against civilization: {civ_list[choose_who_civ_attack].name}")
+            return end
+        count += 1
 
 def list_without_workers(civ: Civilization) -> list[Unit]:
     military_units = []
@@ -219,23 +209,16 @@ def attack_handler(civ_dict: dict, count: int, choice : int):
         return attacker
 
 def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int):
-
-    dmg = attacker.attack(opponent)
-    if opponent.hp <= 0:
-        civ.units.remove(opponent)
-        if civ.all_debilitated() is False:
-            for unit in civ.units:
-                if isinstance(unit, Worker) and all_military_units_defeated(civ) is False:
-                    civ_dict[civ] = list_without_workers(civ)
-                    break
-                else:
-                    civ_dict[civ] = civ.units
-                    break
-        else:
-            print_phase_3((attacker, opponent), print_civ, dmg)
-            return True 
-    print_phase_3((attacker, opponent), print_civ, dmg)
-    return None
+    if attacker.hp > 0:
+        dmg = attacker.attack(opponent)
+        if opponent.hp <= 0:
+            if civ.all_debilitated() is True:
+                print_phase_3((attacker, opponent), print_civ, dmg)
+                return True 
+        print_phase_3((attacker, opponent), print_civ, dmg)
+        return None
+    else:
+        pass
 
 def all_military_units_defeated(civ : Civilization) -> bool:
     for unit in civ.units:
