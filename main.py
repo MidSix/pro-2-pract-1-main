@@ -10,6 +10,26 @@ Sebastián David Moreno Expósito; sebastian.exposito@udc.es
 Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
 """
 def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, Cavalries: int = 0, Infantries: int = 0) -> None:
+    """
+    Crea unidades para una civilización dada.
+
+    Parameters
+    ----------
+    civilization_object : Unit
+        El objeto de civilización para crear unidades.
+    Workers : int, opcional
+        Número de trabajadores a crear (por defecto es 0).
+    Archers : int, opcional
+        Número de arqueros a crear (por defecto es 0).
+    Cavalries : int, opcional
+        Número de caballerías a crear (por defecto es 0).
+    Infantries : int, opcional
+        Número de infanterías a crear (por defecto es 0).
+
+    Returns
+    -------
+    None
+    """
     for worker in range(Workers):
         civilization_object.train_unit("Worker")
     for archer in range(Archers):
@@ -20,6 +40,20 @@ def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, 
         civilization_object.train_unit("Infantry")
 
 def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
+    """
+    Imprime el estado de las civilizaciones en la fase 1.
+
+    Parameters
+    ----------
+    civ1 : Civilization
+        La primera civilización.
+    civ2 : Civilization
+        La segunda civilización.
+
+    Returns
+    -------
+    None
+    """
     civilizations = [civ1, civ2]
     unit_list = [Worker, Archer, Cavalry, Infantry]
     for civ in civilizations:
@@ -31,7 +65,23 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
         print()
     return None
 
-def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:   
+def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
+    """
+    Imprime el estado de las unidades creadas en la fase 2.
+
+    Parameters
+    ----------
+    created_units : list[Unit]
+        Lista de unidades creadas.
+    civ1 : Civilization
+        La primera civilización.
+    civ2 : Civilization
+        La segunda civilización.
+
+    Returns
+    -------
+    None
+    """
     units_by_civ = dict(zip([civ1, civ2], created_units))
     for civ in units_by_civ:
         if units_by_civ[civ] is None:
@@ -41,6 +91,24 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
     return None
 
 def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, data_p: list):
+    """
+    Imprime el estado de la batalla en la fase 3.
+
+    Parameters
+    ----------
+    attacker_oponnent : tuple
+        Tupla que contiene las unidades atacante y oponente.
+    control_variable : int
+        Variable de control para determinar qué civilización está atacando.
+    dmg : int
+        Daño infligido en el ataque.
+    data_p : list
+        Lista para recopilar datos estadísticos.
+
+    Returns
+    -------
+    None
+    """
     #control_variable % 2 == 0 -> muestra la civ1, control_variable % 2 != 0 -> muestra civ2
 
     attacker = attacker_oponnent[0]
@@ -54,6 +122,21 @@ def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, da
         stat_collect(attacker,dmg,civ2,opponent,data_p)
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
+    """
+    Produce unidades para las civilizaciones en función del número de turno.
+
+    Parameters
+    ----------
+    turn : int
+        El número de turno actual.
+    civilizations : list[Unit]
+        Lista de civilizaciones.
+
+    Returns
+    -------
+    list[Unit]
+        Lista de unidades creadas.
+    """
     units_created = []
     for civ in civilizations:
         if turn % 4 == 0:
@@ -67,6 +150,21 @@ def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     return units_created
 
 def battle(civ1: Civilization, civ2: Civilization):
+    """
+    Simula una batalla entre dos civilizaciones.
+
+    Parameters
+    ----------
+    civ1 : Civilization
+        La primera civilización.
+    civ2 : Civilization
+        La segunda civilización.
+
+    Returns
+    -------
+    bool
+        True si una civilización ha perdido, False en caso contrario.
+    """
 
     if civ1.all_debilitated() is False or civ2.all_debilitated() is False:
         civ_dict = {civ1 : [], civ2: []}
@@ -149,6 +247,26 @@ def battle(civ1: Civilization, civ2: Civilization):
     return False
 
 def attack_remaining_units(civ_dict : dict, civ_list : list[Unit], count: int, choose_who_civ_attack: int, choose_who_civ_is_opponent: int):
+    """
+    Maneja los ataques restantes cuando una civilización no tiene más atacantes.
+
+    Parameters
+    ----------
+    civ_dict : dict
+        Diccionario de civilizaciones y sus unidades.
+    civ_list : list[Unit]
+        Lista de civilizaciones.
+    count : int
+        Contador para el número de ataques.
+    choose_who_civ_attack : int
+        Índice para elegir qué civilización ataca.
+    choose_who_civ_is_opponent : int
+        Índice para elegir qué civilización es el oponente.
+
+    Returns
+    -------
+    None
+    """
     while True:
         attacker = get_attacker(civ_dict, count, choose_who_civ_attack)
         if isinstance(attacker, int):
@@ -162,6 +280,19 @@ def attack_remaining_units(civ_dict : dict, civ_list : list[Unit], count: int, c
         count += 1
 
 def list_without_workers(civ: Civilization) -> list[Unit]:
+    """
+    Obtiene una lista de unidades militares sin trabajadores.
+
+    Parameters
+    ----------
+    civ : Civilization
+        La civilización para filtrar unidades.
+
+    Returns
+    -------
+    list[Unit]
+        Lista de unidades militares sin trabajadores.
+    """
     military_units = []
     for unit in civ.units:
         if not isinstance(unit, Worker):
@@ -169,6 +300,23 @@ def list_without_workers(civ: Civilization) -> list[Unit]:
     return military_units
 
 def attack_handler(civ_dict: dict, count: int, choice : int):
+    """
+    Maneja el proceso de ataque y devuelve el atacante.
+
+    Parameters
+    ----------
+    civ_dict : dict
+        Diccionario de civilizaciones y sus unidades.
+    count : int
+        Contador para el número de ataques.
+    choice : int
+        Índice para elegir qué civilización ataca.
+
+    Returns
+    -------
+    Unit
+        La unidad atacante.
+    """
     #list() para permitir que civ_dict.values() sea scriptable (usar choice y count)
     #civ_dict.values() esto te devuelve los atacantes de civ 1 y civ 2
     #con choice se elige entrar en los atacantes de civ 1 o 2. valores 0 y 1 respectivamente.
@@ -182,7 +330,21 @@ def attack_handler(civ_dict: dict, count: int, choice : int):
       
 def get_attacker(civ_dict: dict, count: int, choice : int) -> Unit:
     """
-    Devuelve al atacante.
+    Obtiene la unidad atacante.
+
+    Parameters
+    ----------
+    civ_dict : dict
+        Diccionario de civilizaciones y sus unidades.
+    count : int
+        Contador para el número de ataques.
+    choice : int
+        Índice para elegir qué civilización ataca.
+
+    Returns
+    -------
+    Unit
+        La unidad atacante.
     """
     attacker = attack_handler(civ_dict, count, choice)
 
@@ -193,6 +355,21 @@ def get_attacker(civ_dict: dict, count: int, choice : int) -> Unit:
 
 def get_opponent(civ_dict : dict, civ_opponent: Civilization, attacker: Unit) -> Unit:
     """
+    Obtiene la unidad oponente para el atacante.
+
+    Parameters
+    ----------
+    civ_dict : dict
+        Diccionario de civilizaciones y sus unidades.
+    civ_opponent : Civilization
+        La civilización oponente.
+    attacker : Unit
+        La unidad atacante.
+
+    Returns
+    -------
+    Unit
+        La unidad oponente.
     """
     temp1 = []
     temp2 = []
@@ -206,6 +383,27 @@ def get_opponent(civ_dict : dict, civ_opponent: Civilization, attacker: Unit) ->
     return opponent                
 
 def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int):
+    """
+    Ejecuta el procedimiento de ataque.
+
+    Parameters
+    ----------
+    civ_dict : dict
+        Diccionario de civilizaciones y sus unidades.
+    attacker : Unit
+        La unidad atacante.
+    opponent : Unit
+        La unidad oponente.
+    civ : Civilization
+        La civilización del oponente.
+    print_civ : int
+        Índice para determinar qué civilización está atacando.
+
+    Returns
+    -------
+    bool
+        True si la civilización oponente ha perdido, False en caso contrario.
+    """
     if attacker.hp > 0:
         dmg = attacker.attack(opponent)
         if opponent.hp <= 0:
@@ -218,17 +416,63 @@ def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civi
         pass
 
 def all_military_units_defeated(civ : Civilization) -> bool:
+    """
+    Verifica si todas las unidades militares de una civilización están derrotadas.
+
+    Parameters
+    ----------
+    civ : Civilization
+        La civilización a verificar.
+
+    Returns
+    -------
+    bool
+        True si todas las unidades militares están derrotadas, False en caso contrario.
+    """
     for unit in civ.units:
         if not isinstance(unit, Worker):
             return False
     return True
 
-def stat_collect(attacker: Unit, dmg: int, civilization: Civilization, opponent: Unit, data_p: list): 
+def stat_collect(attacker: Unit, dmg: int, civilization: Civilization, opponent: Unit, data_p: list):
+    """
+    Recopila datos estadísticos de la batalla.
+
+    Parameters
+    ----------
+    attacker : Unit
+        La unidad atacante.
+    dmg : int
+        Daño infligido en el ataque.
+    civilization : Civilization
+        La civilización del atacante.
+    opponent : Unit
+        La unidad oponente.
+    data_p : list
+        Lista para recopilar datos estadísticos.
+
+    Returns
+    -------
+    list
+        Lista actualizada con los datos recopilados.
+    """
     new_data = [attacker.name, type(attacker).__name__, dmg, civilization.name, type(opponent).__name__]
     data_p.append(new_data)
     return data_p
 
 def statistics_show(data_p: list) -> None:
+    """
+    Muestra las estadísticas de la batalla.
+
+    Parameters
+    ----------
+    data_p : list
+        Lista de datos estadísticos recopilados.
+
+    Returns
+    -------
+    None
+    """
     main_data_frame = pd.DataFrame(data_p, columns=["Attacker", "Type", "Dmg", "Civilization", "Opponent"])
     
     # Calcular el daño promedio y la desviación estándar por unidad para cada civilización

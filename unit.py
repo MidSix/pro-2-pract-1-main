@@ -756,7 +756,6 @@ class Worker(Unit):
         Calcula la efectividad del ataque contra la unidad oponente específica.
     """
     
-    #def __init__(self, name: str):
     def __init__(self, name: str,strength : int =1 , defense : int=0, hp : int=5, total_hp: int = 5):  
         """Inicializa una unidad de trabajador con atributos específicos.
         
@@ -807,9 +806,3 @@ class Worker(Unit):
             La efectividad del ataque.
         """
         return -1
-
-# for testing things    
-# if __name__ == "__main__":
-#     pepito = Archer("Archer_1", 4)
-
-#     print(pepito)
