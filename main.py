@@ -1,8 +1,14 @@
+# Parte 3
 import sys
 import importlib
 from unit import *
 from civilization import *
-
+import pandas as pd
+"""
+Authors:
+Sebastián David Moreno Expósito; sebastian.exposito@udc.es
+Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
+"""
 def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, Cavalries: int = 0, Infantries: int = 0) -> None:
     for worker in range(Workers):
         civilization_object.train_unit("Worker")
@@ -25,10 +31,7 @@ def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
         print()
     return None
 
-def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
-    print("PHASE 2: PRODUCTION")
-    print("----------------------------------------")
-    
+def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:   
     units_by_civ = dict(zip([civ1, civ2], created_units))
     for civ in units_by_civ:
         if units_by_civ[civ] is None:
@@ -37,7 +40,7 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
             print(f"{civ.name} creates {units_by_civ[civ].name} ({units_by_civ[civ].unit_type}) Stats: ATT: {units_by_civ[civ].strength} DEF: {units_by_civ[civ].defense}, HP: {units_by_civ[civ].hp}/{units_by_civ[civ].total_hp}")
     return None
 
-def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int):
+def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, data_p: list):
     #control_variable % 2 == 0 -> muestra la civ1, control_variable % 2 != 0 -> muestra civ2
 
     attacker = attacker_oponnent[0]
@@ -45,8 +48,10 @@ def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int):
 
     if control_variable % 2 == 0:
         print(f"{civ1.name} - {attacker.name} attacks {civ2.name} - {opponent} with damage {dmg} (hp = {opponent.hp}/{opponent.total_hp})")
+        stat_collect(attacker,dmg,civ1,opponent,data_p)
     else:
         print(f"{civ2.name} - {attacker.name} attacks {civ1.name} - {opponent} with damage {dmg} (hp = {opponent.hp}/{opponent.total_hp})")
+        stat_collect(attacker,dmg,civ2,opponent,data_p)
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     units_created = []
@@ -200,22 +205,14 @@ def get_opponent(civ_dict : dict, civ_opponent: Civilization, attacker: Unit) ->
     opponent = max(possible_opponents, key=possible_opponents.get)
     return opponent                
 
-def attack_handler(civ_dict: dict, count: int, choice : int):
-    try:
-        attacker = list(civ_dict.values())[choice][count]
-    except IndexError:
-        return None
-    else:                  
-        return attacker
-
 def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int):
     if attacker.hp > 0:
         dmg = attacker.attack(opponent)
         if opponent.hp <= 0:
             if civ.all_debilitated() is True:
-                print_phase_3((attacker, opponent), print_civ, dmg)
+                print_phase_3((attacker, opponent), print_civ, dmg, data_p)
                 return True 
-        print_phase_3((attacker, opponent), print_civ, dmg)
+        print_phase_3((attacker, opponent), print_civ, dmg, data_p)
         return None
     else:
         pass
@@ -225,6 +222,37 @@ def all_military_units_defeated(civ : Civilization) -> bool:
         if not isinstance(unit, Worker):
             return False
     return True
+
+def stat_collect(attacker: Unit, dmg: int, civilization: Civilization, opponent: Unit, data_p: list): 
+    new_data = [attacker.name, type(attacker).__name__, dmg, civilization.name, type(opponent).__name__]
+    data_p.append(new_data)
+    return data_p
+
+def statistics_show(data_p: list) -> None:
+    main_data_frame = pd.DataFrame(data_p, columns=["Attacker", "Type", "Dmg", "Civilization", "Opponent"])
+    
+    # Calcular el daño promedio y la desviación estándar por unidad para cada civilización
+    avg_std_damage_per_unit_civ = main_data_frame.groupby(["Civilization", "Attacker"])["Dmg"].agg(["mean", "std"]).reset_index()
+    avg_std_damage_per_unit_civ.columns = ["Civilization", "Attacker", "Average Damage", "Standard Deviation"]
+    
+    print("Average Damage and Standard Deviation per Unit for each Civilization:")
+    print(avg_std_damage_per_unit_civ)
+    
+    # Calcular el daño promedio y la desviación estándar por tipo de unidad para cada civilización
+    avg_std_damage_per_unit_type_civ = main_data_frame.groupby(["Civilization", "Type"])["Dmg"].agg(["mean", "std"]).reset_index()
+    avg_std_damage_per_unit_type_civ.columns = ["Civilization", "Type", "Average Damage", "Standard Deviation"]
+    
+    print("Average Damage and Standard Deviation per Unit Type for each Civilization:")
+    print(avg_std_damage_per_unit_type_civ)
+    
+    # Calcular el daño promedio que cada tipo de unidad inflige a cada uno de los otros tipos, para cada civilización
+    avg_damage_per_unit_type_opponent = main_data_frame.groupby(["Civilization", "Type", "Opponent"])["Dmg"].mean().reset_index()
+    avg_damage_per_unit_type_opponent.columns = ["Civilization", "Attacker Type", "Opponent Type", "Average Damage"]
+    
+    print("Average Damage per Unit Type to each Opponent Type for each Civilization:")
+    print(avg_damage_per_unit_type_opponent)
+    
+    return None
 
 if __name__ == "__main__":
     actual_turn = 1
@@ -291,6 +319,8 @@ if __name__ == "__main__":
     create_units(civ1,workers,archers,cavalry,infantry) # Crea las unidades para la civilizacion 1
     create_units(civ2,workers,archers,cavalry,infantry) # Crea las unidades para la civilizacion 2
 
+    data_p=[] #inicializacion de la matriz para pandas
+
     #Implementación de la lógica de batalla
     while actual_turn <= turns:
         #fase 1 - recolección:      
@@ -307,7 +337,8 @@ if __name__ == "__main__":
         print_phase_1(civ1, civ2)
 
         #fase 2 - producción:
-
+        print("PHASE 2: PRODUCTION")
+        print("----------------------------------------")
         created_units = production(actual_turn, civilizations_list)
 
         #phase 2 - report
@@ -329,3 +360,6 @@ if __name__ == "__main__":
         #y el dmg que le fue efectuado por una unidad no reflejará su hp, por ejemplo una le dio dmg 4 a la de 25 hp, pero esa misma recibio 2 ataques más
         # de 5 y 7  dmg, el hp que se mostrará de la unidad será 9 y no 21.
         actual_turn += 1
+    print("\nFin de la simulación")
+    print("Estadísticas: ")
+    statistics_show(data_p)

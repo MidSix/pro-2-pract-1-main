@@ -1,7 +1,11 @@
 # Parte 1
 # -*- coding: utf-8 -*-
 from abc import ABC, abstractmethod
-
+"""
+Authors:
+Sebastián David Moreno Expósito; sebastian.exposito@udc.es
+Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
+"""
 class Unit(ABC):
     """Clase abstracta que sirve como superclase para todas las unidades.
     
