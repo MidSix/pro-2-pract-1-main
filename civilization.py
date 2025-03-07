@@ -28,7 +28,7 @@ class Civilization:
     unit_name_list = ["Archer", "Cavalry", "Infantry", "Worker"]
     cost_per_unit = dict(zip(unit_name_list, [60,60,60,30]))
 
-    def __init__(self, name: str, resources: int):
+    def __init__(self, name: str, resources: int) -> None:
         """
         Inicializa una instancia de la clase Civilization.
 
@@ -52,7 +52,7 @@ class Civilization:
 
     #atribute name
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Obtiene el nombre de la civilización.
 
@@ -64,7 +64,7 @@ class Civilization:
         return self._name
     
     @name.setter #Necesita tener el mismo nombre que se define en el property
-    def name(self, sentence):
+    def name(self, sentence) -> None:
         """
         Establece el nombre de la civilización.
 
@@ -93,7 +93,7 @@ class Civilization:
 
     #atribute resources
     @property
-    def resources(self):
+    def resources(self) -> int:
         """
         Obtiene los recursos de la civilización.
 
@@ -105,7 +105,7 @@ class Civilization:
         return self._resources
     
     @resources.setter
-    def resources(self, value):
+    def resources(self, value) -> None:
         """
         Establece los recursos de la civilización.
 
@@ -146,7 +146,7 @@ class Civilization:
         return self._units
     
     @units.setter
-    def units(self, unit):
+    def units(self, unit) -> None:
         """
         Establece la lista de unidades de la civilización.
 
@@ -286,7 +286,7 @@ class Civilization:
                 
             
     #Redefine magic methods
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Representación en cadena de la civilización.
 
@@ -298,7 +298,7 @@ class Civilization:
         units_str = '\n'.join(str(unit) for unit in self._units)
         return f"Civilization: {self._name}, Resources: {self._resources}, units:\n[{units_str}]"
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         """
         Representación oficial en cadena de la civilización.
 

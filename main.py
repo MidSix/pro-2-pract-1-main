@@ -4,19 +4,21 @@ import importlib
 from unit import *
 from civilization import *
 import pandas as pd
+from typing import Union #Simplemente sirve para decir que una función puede devolver distintos tipos de datos en función de las condiciones que se cumplan
+
 """
 Authors:
 Sebastián David Moreno Expósito; sebastian.exposito@udc.es
 Xoel Sánchez Dacoba; xoel.sanchez.dacoba@udc.es
 """
-def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, Cavalries: int = 0, Infantries: int = 0) -> None:
+def create_units(civilization_object: Civilization, Workers: int = 0, Archers: int = 0, Cavalries: int = 0, Infantries: int = 0) -> None:
     """
     Crea unidades para una civilización dada.
 
     Parameters
     ----------
     civilization_object : Unit
-        El objeto de civilización para crear unidades.
+        La civilización para crear unidades.
     Workers : int, opcional
         Número de trabajadores a crear (por defecto es 0).
     Archers : int, opcional
@@ -38,6 +40,8 @@ def create_units(civilization_object: Unit, Workers: int = 0, Archers: int = 0, 
         civilization_object.train_unit("Cavalry")
     for infantry in range(Infantries):
         civilization_object.train_unit("Infantry")
+
+    return None
 
 def print_phase_1(civ1 : Civilization, civ2 : Civilization) -> None:
     """
@@ -90,7 +94,7 @@ def print_phase_2(created_units: list[Unit], civ1, civ2) -> None:
             print(f"{civ.name} creates {units_by_civ[civ].name} ({units_by_civ[civ].unit_type}) Stats: ATT: {units_by_civ[civ].strength} DEF: {units_by_civ[civ].defense}, HP: {units_by_civ[civ].hp}/{units_by_civ[civ].total_hp}")
     return None
 
-def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, data_p: list):
+def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, data_p: list) -> None:
     """
     Imprime el estado de la batalla en la fase 3.
 
@@ -110,7 +114,7 @@ def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, da
     None
     """
     #control_variable % 2 == 0 -> muestra la civ1, control_variable % 2 != 0 -> muestra civ2
-
+    
     attacker = attacker_oponnent[0]
     opponent = attacker_oponnent[1]
 
@@ -120,6 +124,8 @@ def print_phase_3(attacker_oponnent : tuple, control_variable: int, dmg: int, da
     else:
         print(f"{civ2.name} - {attacker.name} attacks {civ1.name} - {opponent} with damage {dmg} (hp = {opponent.hp}/{opponent.total_hp})")
         stat_collect(attacker,dmg,civ2,opponent,data_p)
+
+    return None
 
 def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
     """
@@ -149,7 +155,7 @@ def production(turn : int, civilizations: list[Unit]) -> list[Unit]:
             units_created.append(civ.train_unit("Worker"))
     return units_created
 
-def battle(civ1: Civilization, civ2: Civilization):
+def battle(civ1: Civilization, civ2: Civilization) -> Union[bool, None]:
     """
     Simula una batalla entre dos civilizaciones.
 
@@ -246,7 +252,7 @@ def battle(civ1: Civilization, civ2: Civilization):
 
     return False
 
-def attack_remaining_units(civ_dict : dict, civ_list : list[Unit], count: int, choose_who_civ_attack: int, choose_who_civ_is_opponent: int):
+def attack_remaining_units(civ_dict : dict, civ_list : list[Unit], count: int, choose_who_civ_attack: int, choose_who_civ_is_opponent: int) -> Union[bool, None]:
     """
     Maneja los ataques restantes cuando una civilización no tiene más atacantes.
 
@@ -299,7 +305,7 @@ def list_without_workers(civ: Civilization) -> list[Unit]:
             military_units.append(unit)
     return military_units
 
-def attack_handler(civ_dict: dict, count: int, choice : int):
+def attack_handler(civ_dict: dict, count: int, choice : int) -> Union[Unit, None]:
     """
     Maneja el proceso de ataque y devuelve el atacante.
 
@@ -328,7 +334,7 @@ def attack_handler(civ_dict: dict, count: int, choice : int):
     else:                  
         return attacker
       
-def get_attacker(civ_dict: dict, count: int, choice : int) -> Unit:
+def get_attacker(civ_dict: dict, count: int, choice : int) -> Union[Unit, int]:
     """
     Obtiene la unidad atacante.
 
@@ -382,7 +388,7 @@ def get_opponent(civ_dict : dict, civ_opponent: Civilization, attacker: Unit) ->
     opponent = max(possible_opponents, key=possible_opponents.get)
     return opponent                
 
-def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int):
+def attack_procedure(civ_dict: dict, attacker : Unit, opponent: Unit, civ : Civilization, print_civ: int) -> Union[bool, None]:
     """
     Ejecuta el procedimiento de ataque.
 
@@ -434,7 +440,7 @@ def all_military_units_defeated(civ : Civilization) -> bool:
             return False
     return True
 
-def stat_collect(attacker: Unit, dmg: int, civilization: Civilization, opponent: Unit, data_p: list):
+def stat_collect(attacker: Unit, dmg: int, civilization: Civilization, opponent: Unit, data_p: list) -> list:
     """
     Recopila datos estadísticos de la batalla.
 

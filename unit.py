@@ -60,7 +60,7 @@ class Unit(ABC):
         Proporciona una representación en cadena de texto de la unidad.
     """
     
-    def __init__(self, name: str, strength: int, defense: int, hp: int, total_hp: int, unit_type: str):
+    def __init__(self, name: str, strength: int, defense: int, hp: int, total_hp: int, unit_type: str) -> None:
         """Creación de los atributos de esta clase principal.
         
         Parameters
@@ -90,7 +90,7 @@ class Unit(ABC):
         self.total_hp = total_hp
         
     @property
-    def name(self):
+    def name(self) -> str:
         """Proporciona el nombre de la unidad.
         
         Returns
@@ -101,7 +101,7 @@ class Unit(ABC):
         return self._name
     
     @name.setter
-    def name(self, value: str):
+    def name(self, value: str) -> None:
         """Escribe el nombre de la unidad y comprueba que es válido y no una línea vacía, dando error si así es.
         
         Parameters
@@ -120,7 +120,7 @@ class Unit(ABC):
             raise ValueError("Unit name must be a non-empty string")
                 
     @property
-    def unit_type(self):
+    def unit_type(self) -> str:
         """Proporciona el tipo de la unidad.
         
         Returns
@@ -131,7 +131,7 @@ class Unit(ABC):
         return self._unit_type
     
     @unit_type.setter
-    def unit_type(self, value: str):
+    def unit_type(self, value: str) -> None:
         """Escribe el tipo de la unidad y comprueba que es válido y no una línea vacía, dando error si así es.
         
         Parameters
@@ -150,7 +150,7 @@ class Unit(ABC):
             raise ValueError("Unit type must be a non-empty string")
             
     @property
-    def strength(self):
+    def strength(self) -> int:
         """Proporciona la fuerza de la unidad.
         
         Returns
@@ -161,7 +161,7 @@ class Unit(ABC):
         return self._strength
     
     @strength.setter
-    def strength(self, value: int):
+    def strength(self, value: int) -> None:
         """Escribe la fuerza de la unidad y comprueba que es válida.
         
         Parameters
@@ -180,7 +180,7 @@ class Unit(ABC):
             raise ValueError("Unit strength value must be a non-negative integer")
 
     @property
-    def defense(self):
+    def defense(self) -> int:
         """Proporciona la defensa de la unidad.
         
         Returns
@@ -191,7 +191,7 @@ class Unit(ABC):
         return self._defense
     
     @defense.setter
-    def defense(self, value: int):
+    def defense(self, value: int) -> None:
         """Escribe la defensa de la unidad y comprueba que es válida.
         
         Parameters
@@ -210,7 +210,7 @@ class Unit(ABC):
             raise ValueError("Unit defense value must be a non-negative integer")
 
     @property
-    def hp(self):
+    def hp(self) -> int:
         """Proporciona los puntos de vida actuales de la unidad.
         
         Returns
@@ -221,7 +221,7 @@ class Unit(ABC):
         return self._hp
     
     @hp.setter
-    def hp(self, value: int):
+    def hp(self, value: int) -> None:
         """Escribe los puntos de vida actuales de la unidad y comprueba que son válidos.
         
         Parameters
@@ -240,7 +240,7 @@ class Unit(ABC):
             raise ValueError("Unit hp value must be a non-negative integer")
 
     @property
-    def total_hp(self):
+    def total_hp(self) -> int:
         """Proporciona los puntos de vida totales de la unidad.
         
         Returns
@@ -251,7 +251,7 @@ class Unit(ABC):
         return self._total_hp
     
     @total_hp.setter
-    def total_hp(self, value: int):
+    def total_hp(self, value: int) -> None:
         """Escribe los puntos de vida totales de la unidad y comprueba que son válidos.
         
         Parameters
@@ -351,7 +351,7 @@ class Archer(Unit):
         Calcula la efectividad del ataque contra la unidad oponente específica.
     """
 
-    def __init__(self, name: str,strength : int =7 , defense : int=2, hp : int=15, total_hp: int = 15, arrows : int =3):
+    def __init__(self, name: str,strength : int =7 , defense : int=2, hp : int=15, total_hp: int = 15, arrows : int =3) -> None:
         """Inicializa una unidad de arquero con atributos específicos.
         
         Parameters
@@ -373,7 +373,7 @@ class Archer(Unit):
         self._arrows = arrows
 
     @property
-    def arrows(self):
+    def arrows(self) -> int:
         """Proporciona el número de flechas de la unidad.
         
         Returns
@@ -384,7 +384,7 @@ class Archer(Unit):
         return self._arrows
 
     @arrows.setter
-    def arrows(self, value: int):
+    def arrows(self, value: int) -> None:
         """Escribe el número de flechas de la unidad y comprueba que es válido.
         
         Parameters
@@ -487,7 +487,7 @@ class Cavalry(Unit):
         Calcula la efectividad del ataque contra la unidad oponente específica.
     """
     
-    def __init__(self, name: str,strength : int =5 , defense : int=2, hp : int=25, total_hp: int = 25, charge : int =5):    
+    def __init__(self, name: str,strength : int =5 , defense : int=2, hp : int=25, total_hp: int = 25, charge : int =5) -> None:    
         """Inicializa una unidad de caballería con atributos específicos.
         
         Parameters
@@ -517,7 +517,7 @@ class Cavalry(Unit):
         self._charge = charge
 
     @property
-    def charge(self):
+    def charge(self) -> int:
         """Proporciona la carga de la unidad.
         
         Returns
@@ -528,7 +528,7 @@ class Cavalry(Unit):
         return self._charge
     
     @charge.setter
-    def charge(self, value: int):
+    def charge(self, value: int) -> None:
         """Escribe la carga de la unidad y comprueba que es válida.
         
         Parameters
@@ -625,7 +625,7 @@ class Infantry(Unit):
         Calcula la efectividad del ataque contra la unidad oponente específica.
     """
     
-    def __init__(self, name: str,strength : int =3 , defense : int=2, hp : int=25, total_hp: int = 25, fury : int =3):   
+    def __init__(self, name: str,strength : int =3 , defense : int=2, hp : int=25, total_hp: int = 25, fury : int =3) -> None:   
         """Inicializa una unidad de infantería con atributos específicos.
         
         Parameters
@@ -654,7 +654,7 @@ class Infantry(Unit):
         self._fury = fury
 
     @property
-    def fury(self):
+    def fury(self) -> int:
         """Proporciona la furia de la unidad.
         
         Returns
@@ -665,7 +665,7 @@ class Infantry(Unit):
         return self._fury
 
     @fury.setter
-    def fury(self, value: int):
+    def fury(self, value: int) -> None:
         """Escribe la furia de la unidad y comprueba que es válida.
         
         Parameters
@@ -756,7 +756,7 @@ class Worker(Unit):
         Calcula la efectividad del ataque contra la unidad oponente específica.
     """
     
-    def __init__(self, name: str,strength : int =1 , defense : int=0, hp : int=5, total_hp: int = 5):  
+    def __init__(self, name: str,strength : int =1 , defense : int=0, hp : int=5, total_hp: int = 5) -> None:  
         """Inicializa una unidad de trabajador con atributos específicos.
         
         Parameters
